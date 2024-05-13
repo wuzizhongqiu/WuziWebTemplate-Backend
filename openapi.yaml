@@ -1,0 +1,113 @@
+# Generated with protoc-gen-openapi
+# https://github.com/google/gnostic/tree/master/cmd/protoc-gen-openapi
+
+openapi: 3.0.3
+info:
+    title: User API
+    version: 0.0.1
+paths:
+    /v1/user/login:
+        post:
+            tags:
+                - User
+            description: 用户端登录
+            operationId: User_Login
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/gateway.user.LoginRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/gateway.user.LoginReply'
+    /v1/user/register:
+        post:
+            tags:
+                - User
+            description: 用户注册
+            operationId: User_Register
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/gateway.user.RegisterRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/gateway.user.RegisterReply'
+    /v1/user/test:
+        post:
+            tags:
+                - User
+            description: 测试鉴权
+            operationId: User_Test
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/gateway.user.TestRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/gateway.user.TestReply'
+components:
+    schemas:
+        gateway.user.LoginReply:
+            type: object
+            properties:
+                id:
+                    type: string
+            description: 返回前端的请求
+        gateway.user.LoginRequest:
+            type: object
+            properties:
+                account:
+                    type: string
+                password:
+                    type: string
+            description: |-
+                Register 用户登录
+                 前端传来的请求
+        gateway.user.RegisterReply:
+            type: object
+            properties:
+                id:
+                    type: string
+            description: 返回前端的请求
+        gateway.user.RegisterRequest:
+            type: object
+            properties:
+                account:
+                    type: string
+                password:
+                    type: string
+                checkPassword:
+                    type: string
+            description: |-
+                Register 用户注册
+                 前端传来的请求
+        gateway.user.TestReply:
+            type: object
+            properties:
+                test:
+                    type: string
+        gateway.user.TestRequest:
+            type: object
+            properties:
+                test:
+                    type: string
+tags:
+    - name: User
