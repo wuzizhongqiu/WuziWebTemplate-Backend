@@ -29,6 +29,13 @@ service User {
       body: '*'
     };
   }
+
+  rpc GetCurrentUser (GetCurrentUserRequest) returns (GetCurrentUserReply) {
+    option (google.api.http) = {
+      post: "/v1/user/getuser",
+      body: '*'
+    };
+  }
 }
 
 // Register 用户注册
@@ -63,6 +70,19 @@ message ListRequest {
 
 message ListReply {
   string username = 1;
-  string avatar_url = 2;
-  string user_info = 3;
+  string avatarUrl = 2;
+  string userInfo = 3;
+}
+
+message GetCurrentUserRequest {
+}
+
+message GetCurrentUserReply {
+  string account = 1;
+  string password = 2;
+  string username = 3;
+  string avatarUrl = 4;
+  int32 gender = 5;
+  string userInfo = 6;
+  int32 userRole = 7;
 }

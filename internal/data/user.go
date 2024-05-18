@@ -54,12 +54,22 @@ func (r *userRepo) Login(ctx context.Context, user *model.User) (*model.User, er
 	if users.Password != user.Password {
 		return nil, err
 	}
+
 	return users, err
 }
 
 func (r *userRepo) ListUser(ctx context.Context, id int64) (*model.User, error) {
 	u := r.data.query.User
 	users, err := u.WithContext(ctx).Where(u.ID.Eq(id)).First()
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
+}
+
+func (r *userRepo) GetUser(ctx context.Context) (*model.User, error) {
+	u := r.data.query.User
+	users, err := u.WithContext(ctx).Where(u.ID.Eq(ctx.Value("user_id").(int64))).First()
 	if err != nil {
 		return nil, err
 	}

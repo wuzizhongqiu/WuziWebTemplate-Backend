@@ -12,9 +12,9 @@ import (
 	"github.com/go-kratos/kratos/v2/transport"
 	"github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/gorilla/handlers"
 	v2 "wuzigoweb/api/http/post"
 	v1 "wuzigoweb/api/http/user"
-
 	"wuzigoweb/internal/conf"
 	"wuzigoweb/internal/service"
 )
@@ -64,7 +64,7 @@ func MiddlewareJWTUser() middleware.Middleware {
 	return func(handler middleware.Handler) middleware.Handler {
 		return func(ctx context.Context, req interface{}) (reply interface{}, err error) {
 			if tr, ok := transport.FromServerContext(ctx); ok {
-				tokenString := tr.RequestHeader().Get("token")
+				tokenString := tr.RequestHeader().Get("Authorization")
 				println("tr 接收到的东西是：", tokenString)
 				claims, err := ParseJwtWithClaims(tokenString)
 				if err != nil {
@@ -73,6 +73,7 @@ func MiddlewareJWTUser() middleware.Middleware {
 				if claims.UserRole == 30 {
 					return -1, err
 				}
+				ctx = context.WithValue(ctx, "user_id", claims.UserId)
 			}
 			return handler(ctx, req)
 		}
@@ -84,7 +85,7 @@ func MiddlewareJWTAdmin() middleware.Middleware {
 	return func(handler middleware.Handler) middleware.Handler {
 		return func(ctx context.Context, req interface{}) (reply interface{}, err error) {
 			if tr, ok := transport.FromServerContext(ctx); ok {
-				tokenString := tr.RequestHeader().Get("token")
+				tokenString := tr.RequestHeader().Get("Authorization")
 				println("tr 接收到的东西是：", tokenString)
 				claims, err := ParseJwtWithClaims(tokenString)
 				if err != nil {
@@ -110,7 +111,7 @@ func NewHTTPServer(c *conf.Server, user *service.UserService, post *service.Post
 			selector.Server( // 对非登录注册操作进行鉴权
 				MiddlewareJWTUser()).
 				Prefix("/http.post.Post/").
-				Path("/http.user.User/List").
+				Path("/http.user.User/List", "/http.user.User/GetCurrentUser").
 				Build(),
 		),
 	}
@@ -126,7 +127,15 @@ func NewHTTPServer(c *conf.Server, user *service.UserService, post *service.Post
 	opts = append(opts, http.ResponseEncoder(responseEncoder)) // 自定义响应格式
 	opts = append(opts, http.ErrorEncoder(errorEncoder))
 
+	opts = append(opts, http.Filter(handlers.CORS( // 跨域请求
+		handlers.AllowedOrigins([]string{"http://localhost:8080"}), // Vue 做前端是不支持 "*" 这种形式的
+		handlers.AllowedMethods([]string{"GET", "POST"}),
+		handlers.AllowedHeaders([]string{"Content-Type", "Authorization"}),
+		handlers.AllowCredentials(), // 允许凭证
+	)))
+
 	srv := http.NewServer(opts...)
+
 	v1.RegisterUserHTTPServer(srv, user) // 注册 user 的服务
 	v2.RegisterPostHTTPServer(srv, post) // 注册 post 的服务
 

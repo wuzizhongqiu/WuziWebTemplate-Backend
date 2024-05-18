@@ -88,3 +88,19 @@ func (s *UserService) List(ctx context.Context, req *pb.ListRequest) (*pb.ListRe
 		UserInfo:  user.UserInfo,
 	}, nil
 }
+
+func (s *UserService) GetCurrentUser(ctx context.Context, req *pb.GetCurrentUserRequest) (*pb.GetCurrentUserReply, error) {
+	user, err := s.uc.GetCurrentUser(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.GetCurrentUserReply{
+		Account:   user.Account,
+		Password:  user.Password,
+		Username:  user.Username,
+		AvatarUrl: user.AvatarURL,
+		Gender:    user.Gender,
+		UserInfo:  user.UserInfo,
+		UserRole:  user.UserRole,
+	}, nil
+}

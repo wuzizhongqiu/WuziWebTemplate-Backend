@@ -11,6 +11,7 @@ type UserRepo interface {
 	Save(context.Context, *model.User) (int64, error)
 	Login(context.Context, *model.User) (*model.User, error)
 	ListUser(ctx context.Context, id int64) (*model.User, error)
+	GetUser(ctx context.Context) (*model.User, error)
 	//Update(context.Context, *Greeter) (*Greeter, errcode)
 	//FindByID(context.Context, int64) (*Greeter, errcode)
 	//ListByHello(context.Context, string) ([]*Greeter, errcode)
@@ -38,4 +39,8 @@ func (uc *UserUsecase) UserLogin(ctx context.Context, user *model.User) (*model.
 
 func (uc *UserUsecase) GetUserList(ctx context.Context, id int64) (*model.User, error) {
 	return uc.repo.ListUser(ctx, id)
+}
+
+func (uc *UserUsecase) GetCurrentUser(ctx context.Context) (*model.User, error) {
+	return uc.repo.GetUser(ctx)
 }
