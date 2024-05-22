@@ -24,16 +24,13 @@ func NewUserRepo(data *Data, logger log.Logger) biz.UserRepo {
 func (r *userRepo) Save(ctx context.Context, user *model.User) (int64, error) {
 	u := r.data.query.User
 	// 查看用户名是否被占用
-	users, err := u.WithContext(ctx).Where(u.Account.Eq(user.Account)).First()
-	if err != nil {
-		return -1, err
-	}
+	users, _ := u.WithContext(ctx).Where(u.Account.Eq(user.Account)).First()
 	if users != nil {
 		return -2, nil
 	}
-
+	fmt.Println("用户没有被占用")
 	// 存入数据库
-	err = u.WithContext(ctx).Save(user)
+	err := u.WithContext(ctx).Save(user)
 	if err != nil {
 		return -3, fmt.Errorf("用户注册存入数据库失败")
 	}
@@ -74,4 +71,14 @@ func (r *userRepo) GetUser(ctx context.Context) (*model.User, error) {
 		return nil, err
 	}
 	return users, nil
+}
+
+func (r *userRepo) ListUserPage(ctx context.Context, current, pageSize int32) ([]*model.User, int, error) {
+	u := r.data.query.User
+	users, err := u.WithContext(ctx).Offset(int(current - 1)).Limit(int(pageSize)).Find()
+	count, err := u.WithContext(ctx).Count()
+	if err != nil {
+		return nil, 0, err
+	}
+	return users, int(count), nil
 }

@@ -36,6 +36,13 @@ service User {
       body: '*'
     };
   }
+
+  rpc ListUserByPage (ListUserByPageRequest) returns (ListUserByPageReply) {
+    option (google.api.http) = {
+      post: "/v1/user/listbypage",
+      body: '*'
+    };
+  }
 }
 
 // Register 用户注册
@@ -85,4 +92,24 @@ message GetCurrentUserReply {
   int32 gender = 5;
   string userInfo = 6;
   int32 userRole = 7;
+}
+
+message ListUserByPageRequest {
+  int32 current = 1;
+  int32 pageSize = 2;
+}
+
+message UserInfo {
+  string account = 1;
+  string password = 2;
+  string username = 3;
+  string avatarUrl = 4;
+  int32 gender = 5;
+  string userInfo = 6;
+  int32 userRole = 7;
+}
+
+message ListUserByPageReply {
+  repeated UserInfo userList = 1;
+  int32 total = 2;
 }

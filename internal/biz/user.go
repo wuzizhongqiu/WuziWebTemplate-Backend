@@ -12,6 +12,7 @@ type UserRepo interface {
 	Login(context.Context, *model.User) (*model.User, error)
 	ListUser(ctx context.Context, id int64) (*model.User, error)
 	GetUser(ctx context.Context) (*model.User, error)
+	ListUserPage(ctx context.Context, current, pageSize int32) ([]*model.User, int, error)
 	//Update(context.Context, *Greeter) (*Greeter, errcode)
 	//FindByID(context.Context, int64) (*Greeter, errcode)
 	//ListByHello(context.Context, string) ([]*Greeter, errcode)
@@ -43,4 +44,9 @@ func (uc *UserUsecase) GetUserList(ctx context.Context, id int64) (*model.User, 
 
 func (uc *UserUsecase) GetCurrentUser(ctx context.Context) (*model.User, error) {
 	return uc.repo.GetUser(ctx)
+}
+
+func (uc *UserUsecase) ListUserPage(ctx context.Context, current, pageSize int32) ([]*model.User, int, error) {
+	uc.log.WithContext(ctx).Debugf("biz: 正在执行用户分页逻辑")
+	return uc.repo.ListUserPage(ctx, current, pageSize)
 }

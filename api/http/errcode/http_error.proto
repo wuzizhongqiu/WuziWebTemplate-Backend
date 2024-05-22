@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package http.error;
+package http.errcode;
 
 import "errors/errors.proto";
 

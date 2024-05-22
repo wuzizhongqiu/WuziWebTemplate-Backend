@@ -2,8 +2,8 @@ package server
 
 import (
 	"context"
-	"errors"
 	"fmt"
+	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
@@ -36,8 +36,8 @@ func MiddlewareTest(opts ...string) middleware.Middleware {
 }
 
 func ParseJwtWithClaims(tokenString string, options ...jwt.ParserOption) (*service.JWTClaims, error) {
-	if tokenString == "" {
-		return nil, errors.New("鉴权失败")
+	if tokenString == "" || tokenString == "undefined" {
+		return nil, errors.New(401, "鉴权失败", "token 为空, 用户未登录")
 	}
 
 	println("准备进行 jwt.ParseWithClaims")
@@ -53,7 +53,7 @@ func ParseJwtWithClaims(tokenString string, options ...jwt.ParserOption) (*servi
 
 	// 校验 Claims 对象是否有效，基于 exp（过期时间），nbf（不早于），iat（签发时间）等进行判断（如果有这些声明的话）。
 	if !token.Valid {
-		return nil, errors.New("invalid token")
+		return nil, errors.New(401, "鉴权失败", "invalid token")
 	}
 
 	return token.Claims.(*service.JWTClaims), nil
@@ -68,7 +68,7 @@ func MiddlewareJWTUser() middleware.Middleware {
 				println("tr 接收到的东西是：", tokenString)
 				claims, err := ParseJwtWithClaims(tokenString)
 				if err != nil {
-					return -1, err
+					return -1, errors.New(401, "鉴权失败", "invalid token")
 				}
 				if claims.UserRole == 30 {
 					return -1, err

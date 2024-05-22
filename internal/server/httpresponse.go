@@ -59,6 +59,7 @@ func errorEncoder(w http.ResponseWriter, r *http.Request, err error) {
 		resp = &httpResponse{
 			Code: http.StatusInternalServerError, // 500
 			Msg:  "内部错误",
+			Data: nil,
 		}
 	}
 	codec, _ := kratoshttp.CodecForRequest(r, "Accept")

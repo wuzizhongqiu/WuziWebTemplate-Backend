@@ -53,6 +53,7 @@ func (s *UserService) Login(ctx context.Context, req *pb.LoginRequest) (*pb.Logi
 		Password: req.Password,
 	})
 	if user == nil {
+		fmt.Println("用户不存在")
 		return nil, errcode.ErrorTodoNotFound("用户不存在")
 	}
 
@@ -102,5 +103,31 @@ func (s *UserService) GetCurrentUser(ctx context.Context, req *pb.GetCurrentUser
 		Gender:    user.Gender,
 		UserInfo:  user.UserInfo,
 		UserRole:  user.UserRole,
+	}, nil
+}
+
+func (s *UserService) ListUserByPage(ctx context.Context, req *pb.ListUserByPageRequest) (*pb.ListUserByPageReply, error) {
+	user, total, err := s.uc.ListUserPage(ctx, req.Current, req.PageSize)
+	if err != nil {
+		return nil, err
+	}
+	userList := make([]*pb.UserInfo, req.PageSize)
+	for i := range userList {
+		if i > len(user)-1 {
+			return nil, errcode.ErrorInvalidParam("请求的页数超过实际页数")
+		}
+		userList[i] = &pb.UserInfo{
+			Account:   user[i].Account,
+			Password:  user[i].Password,
+			Username:  user[i].Username,
+			AvatarUrl: user[i].AvatarURL,
+			Gender:    user[i].Gender,
+			UserInfo:  user[i].UserInfo,
+			UserRole:  user[i].UserRole,
+		}
+	}
+	return &pb.ListUserByPageReply{
+		UserList: userList,
+		Total:    int32(total),
 	}, nil
 }

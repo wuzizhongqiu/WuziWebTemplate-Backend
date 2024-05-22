@@ -21,12 +21,14 @@ const _ = http.SupportPackageIsVersion1
 
 const OperationUserGetCurrentUser = "/http.user.User/GetCurrentUser"
 const OperationUserList = "/http.user.User/List"
+const OperationUserListUserByPage = "/http.user.User/ListUserByPage"
 const OperationUserLogin = "/http.user.User/Login"
 const OperationUserRegister = "/http.user.User/Register"
 
 type UserHTTPServer interface {
 	GetCurrentUser(context.Context, *GetCurrentUserRequest) (*GetCurrentUserReply, error)
 	List(context.Context, *ListRequest) (*ListReply, error)
+	ListUserByPage(context.Context, *ListUserByPageRequest) (*ListUserByPageReply, error)
 	// Login 用户端登录
 	Login(context.Context, *LoginRequest) (*LoginReply, error)
 	// Register 用户注册
@@ -39,6 +41,7 @@ func RegisterUserHTTPServer(s *http.Server, srv UserHTTPServer) {
 	r.POST("/v1/user/login", _User_Login0_HTTP_Handler(srv))
 	r.POST("/v1/user/list", _User_List0_HTTP_Handler(srv))
 	r.POST("/v1/user/getuser", _User_GetCurrentUser0_HTTP_Handler(srv))
+	r.POST("/v1/user/listbypage", _User_ListUserByPage0_HTTP_Handler(srv))
 }
 
 func _User_Register0_HTTP_Handler(srv UserHTTPServer) func(ctx http.Context) error {
@@ -129,9 +132,32 @@ func _User_GetCurrentUser0_HTTP_Handler(srv UserHTTPServer) func(ctx http.Contex
 	}
 }
 
+func _User_ListUserByPage0_HTTP_Handler(srv UserHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in ListUserByPageRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationUserListUserByPage)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.ListUserByPage(ctx, req.(*ListUserByPageRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*ListUserByPageReply)
+		return ctx.Result(200, reply)
+	}
+}
+
 type UserHTTPClient interface {
 	GetCurrentUser(ctx context.Context, req *GetCurrentUserRequest, opts ...http.CallOption) (rsp *GetCurrentUserReply, err error)
 	List(ctx context.Context, req *ListRequest, opts ...http.CallOption) (rsp *ListReply, err error)
+	ListUserByPage(ctx context.Context, req *ListUserByPageRequest, opts ...http.CallOption) (rsp *ListUserByPageReply, err error)
 	Login(ctx context.Context, req *LoginRequest, opts ...http.CallOption) (rsp *LoginReply, err error)
 	Register(ctx context.Context, req *RegisterRequest, opts ...http.CallOption) (rsp *RegisterReply, err error)
 }
@@ -162,6 +188,19 @@ func (c *UserHTTPClientImpl) List(ctx context.Context, in *ListRequest, opts ...
 	pattern := "/v1/user/list"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationUserList))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *UserHTTPClientImpl) ListUserByPage(ctx context.Context, in *ListUserByPageRequest, opts ...http.CallOption) (*ListUserByPageReply, error) {
+	var out ListUserByPageReply
+	pattern := "/v1/user/listbypage"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationUserListUserByPage))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {
