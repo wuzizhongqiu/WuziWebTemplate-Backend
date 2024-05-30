@@ -1,0 +1,194 @@
+# Generated with protoc-gen-openapi
+# https://github.com/google/gnostic/tree/master/cmd/protoc-gen-openapi
+
+openapi: 3.0.3
+info:
+    title: ""
+    version: 0.0.1
+paths:
+    /v1/post/createpost:
+        post:
+            tags:
+                - Post
+            description: 创建帖子
+            operationId: Post_CreatePost
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/http.post.CreatePostRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/http.post.CreatePostReply'
+    /v1/user/getuser:
+        post:
+            tags:
+                - User
+            operationId: User_GetCurrentUser
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/http.user.GetCurrentUserRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/http.user.GetCurrentUserReply'
+    /v1/user/list:
+        post:
+            tags:
+                - User
+            operationId: User_List
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/http.user.ListRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/http.user.ListReply'
+    /v1/user/login:
+        post:
+            tags:
+                - User
+            description: 用户端登录
+            operationId: User_Login
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/http.user.LoginRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/http.user.LoginReply'
+    /v1/user/register:
+        post:
+            tags:
+                - User
+            description: 用户注册
+            operationId: User_Register
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/http.user.RegisterRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/http.user.RegisterReply'
+components:
+    schemas:
+        http.post.CreatePostReply:
+            type: object
+            properties:
+                id:
+                    type: string
+        http.post.CreatePostRequest:
+            type: object
+            properties:
+                title:
+                    type: string
+                text:
+                    type: string
+                tags:
+                    type: string
+                userId:
+                    type: string
+        http.user.GetCurrentUserReply:
+            type: object
+            properties:
+                account:
+                    type: string
+                password:
+                    type: string
+                username:
+                    type: string
+                avatarUrl:
+                    type: string
+                gender:
+                    type: integer
+                    format: int32
+                userInfo:
+                    type: string
+                userRole:
+                    type: integer
+                    format: int32
+        http.user.GetCurrentUserRequest:
+            type: object
+            properties: {}
+        http.user.ListReply:
+            type: object
+            properties:
+                username:
+                    type: string
+                avatarUrl:
+                    type: string
+                userInfo:
+                    type: string
+        http.user.ListRequest:
+            type: object
+            properties:
+                id:
+                    type: string
+        http.user.LoginReply:
+            type: object
+            properties:
+                id:
+                    type: string
+                token:
+                    type: string
+            description: 返回前端的请求
+        http.user.LoginRequest:
+            type: object
+            properties:
+                account:
+                    type: string
+                password:
+                    type: string
+            description: |-
+                Register 用户登录
+                 前端传来的请求
+        http.user.RegisterReply:
+            type: object
+            properties:
+                id:
+                    type: string
+            description: 返回前端的请求
+        http.user.RegisterRequest:
+            type: object
+            properties:
+                account:
+                    type: string
+                password:
+                    type: string
+                checkPassword:
+                    type: string
+            description: |-
+                Register 用户注册
+                 前端传来的请求
+tags:
+    - name: Post
+    - name: User

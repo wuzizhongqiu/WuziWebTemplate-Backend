@@ -25,5 +25,6 @@ func NewPostUsecase(repo PostRepo, logger log.Logger) *PostUsecase {
 }
 
 func (uc *PostUsecase) CreateAPost(ctx context.Context, post *model.Post) (int64, error) {
+	uc.log.WithContext(ctx).Debugf("biz: 正在执行 CreateAPost 创建帖子操作")
 	return uc.repo.Save(ctx, post)
 }

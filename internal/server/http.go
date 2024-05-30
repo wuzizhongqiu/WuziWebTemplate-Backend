@@ -13,6 +13,8 @@ import (
 	"github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/gorilla/handlers"
+	v3 "wuzigoweb/api/http/app"
+
 	v2 "wuzigoweb/api/http/post"
 	v1 "wuzigoweb/api/http/user"
 	"wuzigoweb/internal/conf"
@@ -101,7 +103,11 @@ func MiddlewareJWTAdmin() middleware.Middleware {
 }
 
 // NewHTTPServer new an HTTP server.
-func NewHTTPServer(c *conf.Server, user *service.UserService, post *service.PostService, logger log.Logger) *http.Server {
+func NewHTTPServer(c *conf.Server,
+	user *service.UserService,
+	post *service.PostService,
+	app *service.AppService,
+	logger log.Logger) *http.Server {
 	var opts = []http.ServerOption{
 		http.Middleware(
 			recovery.Recovery(), // 获取堆栈信息（便于排错）
@@ -138,6 +144,7 @@ func NewHTTPServer(c *conf.Server, user *service.UserService, post *service.Post
 
 	v1.RegisterUserHTTPServer(srv, user) // 注册 user 的服务
 	v2.RegisterPostHTTPServer(srv, post) // 注册 post 的服务
+	v3.RegisterAppHTTPServer(srv, app)   // 注册 app 的服务
 
 	return srv
 }

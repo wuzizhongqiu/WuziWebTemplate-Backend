@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package http.question;
+
+import "google/api/annotations.proto";
+
+option go_package = "wuzigoweb/api/http/question;question";
+
+service Question {
+  rpc CreatApp (CreatAppRequest) returns (CreatAppReply) {
+    option (google.api.http) = {
+      post: "/v1/app/creatapp",
+      body: "*",
+    };
+  }
+}
+
+
+
+
+

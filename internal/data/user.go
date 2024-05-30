@@ -28,7 +28,6 @@ func (r *userRepo) Save(ctx context.Context, user *model.User) (int64, error) {
 	if users != nil {
 		return -2, nil
 	}
-	fmt.Println("用户没有被占用")
 	// 存入数据库
 	err := u.WithContext(ctx).Save(user)
 	if err != nil {

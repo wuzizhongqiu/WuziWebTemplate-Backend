@@ -19,7 +19,6 @@ func NewUserService(uc *biz.UserUsecase) *UserService {
 }
 
 func (s *UserService) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.RegisterReply, error) {
-	fmt.Println("我是 service 层")
 	// 参数校验
 	if req.Password != req.CheckPassword {
 		return nil, fmt.Errorf("两次输入的密码不同\n")
@@ -96,6 +95,7 @@ func (s *UserService) GetCurrentUser(ctx context.Context, req *pb.GetCurrentUser
 		return nil, err
 	}
 	return &pb.GetCurrentUserReply{
+		Id:        user.ID,
 		Account:   user.Account,
 		Password:  user.Password,
 		Username:  user.Username,
@@ -114,7 +114,7 @@ func (s *UserService) ListUserByPage(ctx context.Context, req *pb.ListUserByPage
 	userList := make([]*pb.UserInfo, req.PageSize)
 	for i := range userList {
 		if i > len(user)-1 {
-			return nil, errcode.ErrorInvalidParam("请求的页数超过实际页数")
+			break
 		}
 		userList[i] = &pb.UserInfo{
 			Account:   user[i].Account,

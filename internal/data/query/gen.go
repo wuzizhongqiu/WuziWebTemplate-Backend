@@ -16,49 +16,69 @@ import (
 )
 
 var (
-	Q          = new(Query)
-	Post       *post
-	PostFavour *postFavour
-	PostThumb  *postThumb
-	User       *user
+	Q             = new(Query)
+	App           *app
+	Post          *post
+	PostFavour    *postFavour
+	PostThumb     *postThumb
+	Question      *question
+	ScoringResult *scoringResult
+	User          *user
+	UserAnswer    *userAnswer
 )
 
 func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 	*Q = *Use(db, opts...)
+	App = &Q.App
 	Post = &Q.Post
 	PostFavour = &Q.PostFavour
 	PostThumb = &Q.PostThumb
+	Question = &Q.Question
+	ScoringResult = &Q.ScoringResult
 	User = &Q.User
+	UserAnswer = &Q.UserAnswer
 }
 
 func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 	return &Query{
-		db:         db,
-		Post:       newPost(db, opts...),
-		PostFavour: newPostFavour(db, opts...),
-		PostThumb:  newPostThumb(db, opts...),
-		User:       newUser(db, opts...),
+		db:            db,
+		App:           newApp(db, opts...),
+		Post:          newPost(db, opts...),
+		PostFavour:    newPostFavour(db, opts...),
+		PostThumb:     newPostThumb(db, opts...),
+		Question:      newQuestion(db, opts...),
+		ScoringResult: newScoringResult(db, opts...),
+		User:          newUser(db, opts...),
+		UserAnswer:    newUserAnswer(db, opts...),
 	}
 }
 
 type Query struct {
 	db *gorm.DB
 
-	Post       post
-	PostFavour postFavour
-	PostThumb  postThumb
-	User       user
+	App           app
+	Post          post
+	PostFavour    postFavour
+	PostThumb     postThumb
+	Question      question
+	ScoringResult scoringResult
+	User          user
+	UserAnswer    userAnswer
 }
 
 func (q *Query) Available() bool { return q.db != nil }
 
 func (q *Query) clone(db *gorm.DB) *Query {
 	return &Query{
-		db:         db,
-		Post:       q.Post.clone(db),
-		PostFavour: q.PostFavour.clone(db),
-		PostThumb:  q.PostThumb.clone(db),
-		User:       q.User.clone(db),
+		db:            db,
+		App:           q.App.clone(db),
+		Post:          q.Post.clone(db),
+		PostFavour:    q.PostFavour.clone(db),
+		PostThumb:     q.PostThumb.clone(db),
+		Question:      q.Question.clone(db),
+		ScoringResult: q.ScoringResult.clone(db),
+		User:          q.User.clone(db),
+		UserAnswer:    q.UserAnswer.clone(db),
 	}
 }
 
@@ -72,27 +92,39 @@ func (q *Query) WriteDB() *Query {
 
 func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 	return &Query{
-		db:         db,
-		Post:       q.Post.replaceDB(db),
-		PostFavour: q.PostFavour.replaceDB(db),
-		PostThumb:  q.PostThumb.replaceDB(db),
-		User:       q.User.replaceDB(db),
+		db:            db,
+		App:           q.App.replaceDB(db),
+		Post:          q.Post.replaceDB(db),
+		PostFavour:    q.PostFavour.replaceDB(db),
+		PostThumb:     q.PostThumb.replaceDB(db),
+		Question:      q.Question.replaceDB(db),
+		ScoringResult: q.ScoringResult.replaceDB(db),
+		User:          q.User.replaceDB(db),
+		UserAnswer:    q.UserAnswer.replaceDB(db),
 	}
 }
 
 type queryCtx struct {
-	Post       IPostDo
-	PostFavour IPostFavourDo
-	PostThumb  IPostThumbDo
-	User       IUserDo
+	App           IAppDo
+	Post          IPostDo
+	PostFavour    IPostFavourDo
+	PostThumb     IPostThumbDo
+	Question      IQuestionDo
+	ScoringResult IScoringResultDo
+	User          IUserDo
+	UserAnswer    IUserAnswerDo
 }
 
 func (q *Query) WithContext(ctx context.Context) *queryCtx {
 	return &queryCtx{
-		Post:       q.Post.WithContext(ctx),
-		PostFavour: q.PostFavour.WithContext(ctx),
-		PostThumb:  q.PostThumb.WithContext(ctx),
-		User:       q.User.WithContext(ctx),
+		App:           q.App.WithContext(ctx),
+		Post:          q.Post.WithContext(ctx),
+		PostFavour:    q.PostFavour.WithContext(ctx),
+		PostThumb:     q.PostThumb.WithContext(ctx),
+		Question:      q.Question.WithContext(ctx),
+		ScoringResult: q.ScoringResult.WithContext(ctx),
+		User:          q.User.WithContext(ctx),
+		UserAnswer:    q.UserAnswer.WithContext(ctx),
 	}
 }
 

@@ -1,0 +1,113 @@
+syntax = "proto3";
+
+package http.app;
+
+import "google/api/annotations.proto";
+
+option go_package = "wuzigoweb/api/http/app;app";
+
+service App {
+  rpc CreatApp (CreatAppRequest) returns (CreatAppReply) {
+    option (google.api.http) = {
+      post: "/v1/app/creatapp",
+      body: "*",
+    };
+  }
+
+  rpc ModifyApp (ModifyAppRequest) returns (ModifyAppReply) {
+    option (google.api.http) = {
+      post: "/v1/app/modifyapp",
+      body: "*",
+    };
+  }
+
+  rpc GetAppById (GetAppByIdRequest) returns (GetAppByIdReply) {
+    option (google.api.http) = {
+      post: "/v1/app/getappbyid",
+      body: "*",
+    };
+  }
+
+  // 获取应用列表分页
+  rpc ListAppPage (ListAppPageRequest) returns (ListAppPageReply) {
+    option (google.api.http) = {
+      post: "/v1/app/listapppage",
+      body: "*",
+    };
+  }
+}
+
+message CreatAppRequest {
+  string appName = 1;
+  string appDesc = 2;
+  string appIcon = 3;
+  int32 appType = 4;
+  int32 scoringStrategy = 5;
+}
+
+message CreatAppReply {
+}
+
+message ModifyAppRequest {
+  int64 appId = 1;
+  AppModInfo appModInfo = 2;
+}
+
+message ModifyAppReply {
+}
+
+message AppModInfo {
+  string appName = 1;
+  string appDesc = 2;
+  string appIcon = 3;
+  int32 appType = 4;
+  int32 scoringStrategy = 5;
+}
+
+message AppInfo {
+  string appName = 1;
+  string appDesc = 2;
+  string appIcon = 3;
+  int32 appType = 4;
+  int32 scoringStrategy = 5;
+  int32 reviewStatus = 6;
+  string reviewMessage = 7;
+  int64 reviewId = 8;
+  int64 userId = 9;
+  int64 appId = 10;
+}
+
+message UserInfo {
+  int64 id = 1;
+  string account = 2;
+  string password = 3;
+  string username = 4;
+  string avatarUrl = 5;
+  int32 gender = 6;
+  string userInfo = 7;
+  int32 userRole = 8;
+}
+
+message GetAppByIdRequest {
+  int64 appId = 1;
+}
+
+message GetAppByIdReply {
+  AppInfo app = 1;
+  UserInfo user = 2;
+}
+
+message ListAppPageRequest {
+  int32 current = 1;
+  int32 pageSize = 2;
+}
+
+message ListAppPageReply {
+  repeated AppInfo appList = 1;
+  int32 total = 2;
+}
+
+
+
+
+

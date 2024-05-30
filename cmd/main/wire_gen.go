@@ -42,7 +42,10 @@ func wireApp(confServer *conf.Server, confData *conf.Data, micro *conf.Micro, lo
 	postRepo := data.NewPostRepo(dataData, logger)
 	postUsecase := biz.NewPostUsecase(postRepo, logger)
 	postService := service.NewPostService(postUsecase)
-	httpServer := server.NewHTTPServer(confServer, userService, postService, logger)
+	appRepo := data.NewAppRepo(dataData, logger)
+	appUsecase := biz.NewAppUsecase(appRepo, logger)
+	appService := service.NewAppService(appUsecase)
+	httpServer := server.NewHTTPServer(confServer, userService, postService, appService, logger)
 	app := newApp(logger, httpServer)
 	return app, func() {
 		cleanup()

@@ -15,7 +15,7 @@ import (
 )
 
 // ProviderSet is data providers.
-var ProviderSet = wire.NewSet(NewData, NewDB, NewRedis, NewUserRepo, NewPostRepo)
+var ProviderSet = wire.NewSet(NewData, NewDB, NewRedis, NewUserRepo, NewPostRepo, NewAppRepo)
 
 // Data .
 type Data struct {
@@ -60,8 +60,8 @@ func NewRedis(cfg *conf.Data) (*redis.Client, error) {
 		panic("fail to connect redis")
 	}
 
-	res, err := redisConn.Set(context.Background(), "abc", 100, time.Millisecond*60).Result()
-	fmt.Printf("res ======= %v, err ====== %v\n", res, err)
+	_, err := redisConn.Set(context.Background(), "abc", 100, time.Millisecond*60).Result()
+
 	// 调用 redisConn.Ping() 方法来测试与 Redis 的连接是否正常
 	_, err = redisConn.Ping(context.Background()).Result()
 	if err != nil {
